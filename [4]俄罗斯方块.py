@@ -11,7 +11,7 @@ Size = 35
 
 # TK()方法用于创建主窗口
 root = Tk()
-map = []
+
 # 方块模板 可以依据模板渲染出方块
 fangKuai = [
         [
@@ -47,8 +47,9 @@ nowY = 0
 isStop = False
 
 
-
 # 创建地图数组
+map = []
+# 建立地图
 # 循环Row行次
 for i in range(Row):
     # 推入一个空列表

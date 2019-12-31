@@ -11,10 +11,12 @@ fps = 0
 
 # 蛇的身体坐标 最左边是头，最右边是尾
 snake = [[2,1],[1,1],[0,1]]
-# 苹果位置
-
+#蛇的方向
 direction = 'Down'
+
+# TK()方法用于创建主窗口
 root = Tk()
+# 绘制canvas画布，第一个参数是父窗口,然后设置画布的宽度和高度和颜色  宽度为列*块大小  高度为行*高大小
 cv = Canvas(root, bg='gray55',width=Column*Size+10, height=Row*Size+10)
 
 # 画方块方法

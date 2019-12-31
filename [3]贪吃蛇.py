@@ -35,6 +35,7 @@ def drawRect(x,y):
     :param y: 坐标
     """
     cv.create_rectangle(x*Size,y*Size,Size+x*Size,Size+y*Size,fill=Color)
+
 # 绘制地图函数
 def drawMap():
     # 循环行画出行
@@ -151,6 +152,10 @@ def arrIsHas(arr1,arr2):
         if operator.eq(v,arr2):
             return True
 
+# 创建Tk窗口
+root = Tk()
+# 绘制canvas画布，第一个参数是父窗口,然后设置画布的宽度和高度和颜色  宽度为列*块大小  高度为行*高大小
+cv = Canvas(root, bg='gray55',width=Column*Size+10, height=Row*Size+10)
 # 调用绘制地图方法
 drawMap()
 # 初始化canvas
