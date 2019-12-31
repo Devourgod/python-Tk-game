@@ -1,9 +1,13 @@
+# 引入TK窗口包
 from tkinter import *
 
+# 定义变量,画布的列和行
 Column = 20
 Row = 20
+# 每个方块的大小
 Size = 35
-i = 0
+# 记录fps
+fps = 0
 
 # 蛇的身体坐标 最左边是头，最右边是尾
 snake = [[2,1],[1,1],[0,1]]
@@ -36,17 +40,23 @@ def drawMap():
 
 # 刷新方法 每10毫米
 def render():
-    global i
-    if i%50==0:
+    global fps
+    # 当fps过去了50帧则调用一次move移动蛇
+    if fps%50==0:
         move()
-    i+=1
+    fps+=1
+    # 每间隔10毫秒执行一次渲染
     root.after(10,render)
 def move():
     global snake,X,Y
+    # 清空整个画布 参数为ALL
     cv.delete(ALL)
+    # 调用渲染地图方法
     drawMap()
+    # 缓存新的蛇身体
     cache = []
     if direction == 'Down':
+        # 向下移动蛇的头部
         cache.append([snake[0][0],snake[0][1]+1])
     if direction == 'Left':
         cache.append([snake[0][0]-1,snake[0][1]])
@@ -78,8 +88,13 @@ def handle_events(event):
         direction="Up"
         move()
 
+# 调用绘制地图方法
 drawMap()
+# 初始化canvas
 cv.pack()
+# 调用渲染方法，方法会重新渲染方块的位置和地图 方法每隔100毫秒会自动执行一次
 render()
+# 绑定监听，如果监听到键盘按下会执行handle_events函数并传入此次事件
 root.bind("<Key>", handle_events)
+# 运行tk窗口
 root.mainloop()

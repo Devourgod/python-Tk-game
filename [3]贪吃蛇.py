@@ -71,6 +71,7 @@ def move():
     #默认在当前移动过程中没有吃到苹果
     iseat = 1
     if direction == 'Down':
+        # 向下移动蛇的头部
         cache.append([snake[0][0],snake[0][1]+1])
     elif direction == 'Left':
         cache.append([snake[0][0]-1,snake[0][1]])
@@ -149,6 +150,7 @@ def arrIsHas(arr1,arr2):
         # 使用operator.eq判断两数组是否相同
         if operator.eq(v,arr2):
             return True
+
 # 调用绘制地图方法
 drawMap()
 # 初始化canvas

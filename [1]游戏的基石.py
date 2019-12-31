@@ -36,6 +36,7 @@ def drawMap():
     # 循环列画出列
     for i in range(Column):
         cv.create_line(Size*i, 0, Size*i, Size*Row,width = 2)
+
 # TK()方法用于创建主窗口
 root = Tk()
 # 绘制canvas画布，第一个参数是父窗口,然后设置画布的宽度和高度和颜色

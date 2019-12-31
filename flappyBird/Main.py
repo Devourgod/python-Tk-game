@@ -116,12 +116,14 @@ class Game():
         else:
             return True
 
-
+# 小鸟类
 class Bird():
+    # 角度 当前图片序列 X坐标 Y坐标
     angle = 90
     picX = 0
     X = 100
     Y = 100
+    # 是否移动
     Move = False
     Speed = 0
     isFly = False
