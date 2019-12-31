@@ -1,20 +1,26 @@
-import json
-import sys
 import random
 # pillow 图像处理库 用于图片的旋转、读取和镜像
 # 安装指令：pip install pillow
 import PIL
+# 引入用于转图片为Tk窗口支持对象的包
 from PIL import ImageTk
 from tkinter import *
 
 # 游戏主程序
 class Game():
+    # 游戏已经过去的fps
     fps = 0
+    # 得分
     scores = 0
+    # 是否死亡
     isDie = False
+    # 窗口宽度
     Width = 768
+    # 窗口高度
     height = 1024
+    # 管子列表
     pipeList = []
+    # 得分图片列表
     ScoreList = []
 
     def __init__(self, title):
@@ -22,7 +28,7 @@ class Game():
         self.canvas = Canvas(self.root, bg='gray55',width=768, height=1024)
         self.canvas.pack()
         self.background = ImageTk.PhotoImage(file='images/background.png')
-        for i in range(0, 9):
+        for i in range(0, 10):
             self.ScoreList.append(ImageTk.PhotoImage(
                 file='images/'+str(i)+'.png'))
         print('-----图片资源加载完成')
@@ -78,13 +84,13 @@ class Game():
         scoreStr = str(self.scores)
         for i in range(0, len(scoreStr)):
             char = scoreStr[i]
-            # 有bug
+            print(scoreStr)
             if(len(scoreStr) % 2 == 1):
                 self.canvas.create_image(
                     self.Width / 2 - 16 * (len(scoreStr)) + 33 * i, 100,anchor=NW, image=self.ScoreList[int(char)])
             else:
                 self.canvas.create_image(
-                    self.height / 2 - 32 * (len(scoreStr) / 2) + 33 * i, 100,anchor=NW, image=self.ScoreList[int(char)])
+                    self.Width / 2 - 32 * (len(scoreStr) / 2) + 33 * i, 100,anchor=NW, image=self.ScoreList[int(char)])
 
     # 矩形碰撞检测
     # 此函数将会获取a,b两个对象的坐标和宽高计算四边的坐标用于判断碰撞条件
@@ -118,37 +124,47 @@ class Game():
 
 # 小鸟类
 class Bird():
-    # 角度 当前图片序列 X坐标 Y坐标
+    # 角度 X坐标 Y坐标
     angle = 90
-    picX = 0
     X = 100
     Y = 100
-    # 是否移动
-    Move = False
+    # 速度 是否在飞行状态 鸟宽度 鸟高度
     Speed = 0
     isFly = False
     Width = 92
     Height = 64
+    # 当前图片序列
     step = 0
+    # 鸟图片序列图
     list = []
-
+    # 初始化
     def __init__(self, canvas):
+        # 把画布引用在在canvas
         self.canvas = canvas
         self.list.append(PIL.Image.open('images/bird1_c1.png'))
         self.list.append(PIL.Image.open('images/bird1_c2.png'))
         self.list.append(PIL.Image.open('images/bird1_c3.png'))
 
+    #飞行方法 让小鸟飞行一段事件
     def fly(self, fps):
+        # 开启飞行状态
         self.isFly = True
+        # 设置小鸟为飞冲角度
         self.angle = 40
+        # 记录开始飞行时的fps
         self.flyf = fps
+        # 设置加速度
         self.Speed = 8
 
+    # 刷新数据
     def updata(self, fps):
         # 飞行状态
         if self.isFly:
+            # 每次刷新数据都减少加速度
             self.Speed -= 0.3
+            # 自己的y轴减去加速度，缓慢降低或增高
             self.Y -= self.Speed
+            # 改变飞行角度
             self.angle -= 0.5
             if fps % 3 == 0:
                 self.step += 1
@@ -164,24 +180,39 @@ class Bird():
             self.Y += self.Speed
             self.angle -= 3
 
+    # 重新渲染小鸟方法
     def render(self, fps):
-        
-        self.ratateImg = ImageTk.PhotoImage(self.list[self.step].rotate(self.angle,expand=True))
+        # 旋转当前 step 序列的那张图片
+        # 调用Pillow内置方法旋转图片 |设置expand = true则旋转后重新改变图像大小
+        cacheImage = self.list[self.step].rotate(self.angle,expand=True)
+        # 转换为被canvas支持的图片对象
+        self.ratateImg = ImageTk.PhotoImage(cacheImage)
+        # 创建图片在坐标位置 | anchor = NW 则以图片左上角为原点
         self.canvas.create_image(self.X, self.Y, anchor=NW,image=self.ratateImg)
 
-
+# 地面类
 class earth():
+    # 单一地面图片只有窗口的一小部分大，创建多个图片移动产生无限大地的错觉
+    # 当前大地x轴
     X = 0
+    # 一个大地图片的宽度
     Width = 37
-
+    # 初始化 传入 canvas画布
     def __init__(self, canvas):
         self.canvas = canvas
+        # 引入地面图片
         self.ground = ImageTk.PhotoImage(file='images/ground.png')
+
     def updata(self):
+        # 移动大地X轴
         self.X += 4
+        # 如果移动量超过了37则重新设置回0
         if self.X > 37:
             self.X = 0
+
+    # 渲染地面
     def render(self):
+        # 渲染26个地面让地面连接在一起
         for i in range(0, 26):
             self.canvas.create_image(i*37-self.X, 896, anchor=NW,image=self.ground)
 
