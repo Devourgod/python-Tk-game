@@ -28,13 +28,13 @@ fps = 0
 
 
 # 绘制一个设定大小的方块
-def drawRect(x,y):
+def drawRect(x,y,color):
     """
     以指定x，y为坐标，画一个长块Size大小的方块
     :param x: 坐标
     :param y: 坐标
     """
-    cv.create_rectangle(x*Size,y*Size,Size+x*Size,Size+y*Size,fill=Color)
+    cv.create_rectangle(x*Size,y*Size,Size+x*Size,Size+y*Size,fill=color)
 
 # 绘制地图函数
 def drawMap():
@@ -105,10 +105,13 @@ def move():
     # 把新蛇给snake变量
     snake = cache
     # 绘制苹果
-    drawRect(*apple)
-    # 遍历蛇身体数组 重新以数组内的每一个坐标数组渲染贪吃蛇
-    for v in snake:
-        drawRect(v[0],v[1])
+    drawRect(*apple,'red')
+    # 绘制蛇的头部
+    drawRect(snake[0][0],snake[0][1],'yellow')
+    # 遍历蛇身体数组 重新以数组内的坐标渲染蛇的身体
+    for k in range(1,len(snake)):
+        # 从数组的第1项开始遍历 省略头部
+        drawRect(snake[k][0],snake[k][1],Color)
 
 def handle_events(event):
     # event.keysym为按下按键的名称

@@ -1,10 +1,9 @@
 import random
-# pillow 图像处理库 用于图片的旋转、读取和镜像
-# 安装指令：pip install pillow
+from tkinter import *
+# pillow 图像处理库 用于图片的旋转、读取和镜像 安装指令：pip install pillow
 import PIL
 # 引入用于转图片为Tk窗口支持对象的包
 from PIL import ImageTk
-from tkinter import *
 
 # 游戏主程序
 class Game():
@@ -17,39 +16,48 @@ class Game():
     # 窗口宽度
     Width = 768
     # 窗口高度
-    height = 1024
+    Height = 1024
     # 管子列表
     pipeList = []
     # 得分图片列表
     ScoreList = []
 
     def __init__(self, title):
+        # Tk()方法载入窗口
         self.root = Tk()
-        self.canvas = Canvas(self.root, bg='gray55',width=768, height=1024)
+        # 创建Canvas对象在 窗口root中
+        self.canvas = Canvas(self.root, bg='gray55',width=self.Width, height=self.Height)
+        # 把Canvas对象放置在窗口内
         self.canvas.pack()
+        # 载入北京图片
         self.background = ImageTk.PhotoImage(file='images/background.png')
+        # 载入所有分数图片到ScoreList列表
         for i in range(0, 10):
             self.ScoreList.append(ImageTk.PhotoImage(
                 file='images/'+str(i)+'.png'))
         print('-----图片资源加载完成')
-
+        # 创建小鸟对象
         self.bird = Bird(self.canvas)
         self.earth = earth(self.canvas)  # 地面对象
-
-        self.updata()  # 游戏运行
-        # self.root.bind("<Key>", handle_events)
+        # 调用数据更新方法运行游戏时钟
+        self.updata()  
+        # 绑定监听 回掉为mouse_event函数 在下方定义
         self.root.bind("<Button-1>", self.mouse_event)
+        # 窗口运行
         self.root.mainloop()
 
     def updata(self):
-        #更新 小鸟， 地面 ，管子的数据 并重新渲染
+        # 更新 小鸟， 地面 ，管子的数据 并重新渲染
         self.canvas.delete(ALL)
+        # 绘制背景图片
         self.canvas.create_image(0, 0, anchor=NW,image=self.background)
-        
+        # 判断是否在死亡状态 如果没有就生成一个管子
         if not self.isDie:
+            # fps没间隔120帧生成一个管子
             if self.fps % 120 == 0:
                 self.pipeList.append(Pipe(self.canvas))
-        self.bird.updata(self.fps)  # 小鸟位置数据更新
+        # 小鸟位置数据更新
+        self.bird.updata(self.fps)
         # 遍历管子列表，刷新管子的位置
         for obj in self.pipeList:
             if not self.isDie:
@@ -64,17 +72,25 @@ class Game():
                 self.scores += 1
             if obj.X < -260:
                 self.pipeList.remove(obj)
-        # if self.bird.Y < 0 or self.bird.Y > self.height:
-        #     self.isDie = True
-
-        self.bird.render(self.fps)  # 小鸟重新渲染在画布
+        # 如果小鸟坐标超出窗口则死亡
+        if self.bird.Y < 0 or self.bird.Y > self.Height:
+            self.isDie = True
+        # 小鸟重新渲染在画布    
+        self.bird.render(self.fps)  
+        # 更新大地数据
         self.earth.updata()
+        # 重新绘制大地
         self.earth.render()
+        # 绘制游戏分数
         self.showScores()
-        self.fps += 1  # 增加一个fps
-        self.canvas.create_text(0, 0,anchor=NW, text=str(self.fps))  # 渲染fps到0,0坐标
+        # 增加一个fps
+        self.fps += 1
+        # 渲染fps到0,0坐标
+        self.canvas.create_text(0, 0,anchor=NW, text=str(self.fps))
+        # 每间隔16ms调用一次updata函数 这样界面就会一直更新 小鸟就会一直变换位置
         self.root.after(16, self.updata)
    
+    # 
     def mouse_event(self,event):
         if not self.isDie:
             self.bird.fly(self.fps)
@@ -84,7 +100,6 @@ class Game():
         scoreStr = str(self.scores)
         for i in range(0, len(scoreStr)):
             char = scoreStr[i]
-            print(scoreStr)
             if(len(scoreStr) % 2 == 1):
                 self.canvas.create_image(
                     self.Width / 2 - 16 * (len(scoreStr)) + 33 * i, 100,anchor=NW, image=self.ScoreList[int(char)])
@@ -93,25 +108,30 @@ class Game():
                     self.Width / 2 - 32 * (len(scoreStr) / 2) + 33 * i, 100,anchor=NW, image=self.ScoreList[int(char)])
 
     # 矩形碰撞检测
-    # 此函数将会获取a,b两个对象的坐标和宽高计算四边的坐标用于判断碰撞条件
-    def isPengzhuang(self, a, b):
-        t1 = a.Y  # top 这个矩形的顶边
-        l1 = a.X  # left 这个矩形的左边
-        r1 = a.X + a.Width  # right 这个矩形的右边
-        b1 = a.Y + a.Height  # bottom 这个矩形的底边
+    # 此函数将会获取bird,b两个对象的坐标和宽高计算四边的坐标用于判断碰撞条件
+    def isPengzhubirdng(self, bird, b):
+        """
+        以指定x，y为圆心，以指定r为半径画圆
+        :param bird: 小鸟
+        :param b: 柱子
+        """
+        t1 = bird.Y  # top 这个矩形的顶边
+        l1 = bird.X  # left 这个矩形的左边
+        r1 = bird.X + bird.Width  # right 这个矩形的右边
+        b1 = bird.Y + bird.Height  # bottom 这个矩形的底边
 
         # 上面的柱子
-        t2 = b.Y
-        l2 = b.X
-        r2 = b.X + b.Width
-        b2 = b.Y + b.Height
+        t2 = b.Y   # top 这个矩形的顶边
+        l2 = b.X   # left 这个矩形的左边
+        r2 = b.X + b.Width  # right 这个矩形的右边
+        b2 = b.Y + b.Height  # bottom 这个矩形的底边
 
         # 下面的柱子
-        # 间隔加上面柱子的高度才是自己的Y
-        t3 = b.Y + b.Gap + b.Height
-        l3 = b.X
-        r3 = b.X + b.Width
-        b3 = t3 + b.Height
+        # 间隔加上上面柱子的高度才是自己的Y轴
+        t3 = b.Y + b.Gap + b.Height   # top 这个矩形的顶边
+        l3 = b.X   # left 这个矩形的左边
+        r3 = b.X + b.Width  # right 这个矩形的右边
+        b3 = t3 + b.Height  # bottom 这个矩形的底边
 
         # 如果矩形1的底高于矩形2的顶说明不可能触碰
         # 如果矩形1的左大于矩形2的右则也不能
@@ -165,7 +185,7 @@ class Bird():
             # 自己的y轴减去加速度，缓慢降低或增高
             self.Y -= self.Speed
             # 改变飞行角度
-            self.angle -= 0.5
+            self.angle -= 0.8
             if fps % 3 == 0:
                 self.step += 1
                 if self.step >= 3:
@@ -178,7 +198,7 @@ class Bird():
         else:
             self.Speed += 0.5
             self.Y += self.Speed
-            self.angle -= 3
+            self.angle -= 2
 
     # 重新渲染小鸟方法
     def render(self, fps):
@@ -216,33 +236,41 @@ class earth():
         for i in range(0, 26):
             self.canvas.create_image(i*37-self.X, 896, anchor=NW,image=self.ground)
 
-
+# 管子类
 class Pipe():
+    # X轴 坐标为窗口宽度加上管子图片宽度 这样管子就在窗口外进来了
     X = 768+260
-    Y = 0
-    top = 20
+    Y = 0  # Y轴
     Speed = 4  # 管子向左的速度
     Gap = 260  # 管子间间隙有260像素
-    Width = 138
-    Height = 793
-    isScore = True
-
+    Width = 138  #管子宽度
+    Height = 793  #管子高度
+    isScore = True  #是否已经被小鸟越过
+    
     def __init__(self, canvas):
+        # 提取canvas画布引用
         self.canvas = canvas
+        # 引入管子图片
         self.pipeImage = PIL.Image.open('images/pipe.png')
+        # 创建下方的管子对象
         self.pipeBottom = ImageTk.PhotoImage(self.pipeImage)
-        self.pipeTop = ImageTk.PhotoImage(
-            self.pipeImage.transpose(PIL.Image.FLIP_TOP_BOTTOM))
-        self.Y = -793 + random.randint(60, 450)  # 随机一个管子间隙的高度
+        # 使用transpose(镜像类型) 水平镜像图片 这样这张图就朝下成为了上面的管子
+        self.pipeTop = ImageTk.PhotoImage(self.pipeImage.transpose(PIL.Image.FLIP_TOP_BOTTOM))
+        # 随机一个管子间隙的高度
+        self.Y = -793 + random.randint(60, 450)
 
+    # 更新管子位置数据
     def updata(self):
         self.X -= self.Speed
 
+    # 重新渲染管子
     def render(self, fps):
+        # 上方管子绘制在画布上
         guanzi1 = self.canvas.create_image(self.X, self.Y, anchor=NW,image=self.pipeTop)
-        guanzi2 = self.canvas.create_image(
-            self.X, self.Y+self.Gap+793, anchor=NW,image=self.pipeBottom)
+        # 下方管子的Y轴为  top管子Y坐标 加上管子的高度 和间隙
+        guanzi2 = self.canvas.create_image(self.X, self.Y+self.Gap+793, anchor=NW,image=self.pipeBottom)
 
 
 if __name__ == '__main__':
+    # 创建游戏对象 传入窗口标题
     Game('flappyBird')
