@@ -109,7 +109,7 @@ class Game():
 
     # 矩形碰撞检测
     # 此函数将会获取bird,b两个对象的坐标和宽高计算四边的坐标用于判断碰撞条件
-    def isPengzhubirdng(self, bird, b):
+    def isPengzhuang(self, bird, b):
         """
         以指定x，y为圆心，以指定r为半径画圆
         :param bird: 小鸟

@@ -1,7 +1,5 @@
 # 引入TK窗口包
 from tkinter import *
-# 引入用于判断数组是否相同的包
-import operator
 # 引入随机数生成包
 import random
 
@@ -81,7 +79,7 @@ def move():
     elif direction == 'Up':
         cache.append([snake[0][0],snake[0][1]-1])
     # 如果蛇的头部位置等于当前苹果的位置 则表示吃到了苹果
-    if operator.eq(cache[0],apple):
+    if cache[0]==apple:
         # 设置成功吃到了苹果
         iseat = 0
         # 随机一个新的苹果坐标
@@ -151,8 +149,7 @@ def handle_events(event):
 # 判断数组内是否包含另一个数组
 def arrIsHas(arr1,arr2):
     for v in arr1:
-        # 使用operator.eq判断两数组是否相同
-        if operator.eq(v,arr2):
+        if v==arr2:
             return True
 
 # 创建Tk窗口
